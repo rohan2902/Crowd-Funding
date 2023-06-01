@@ -1,5 +1,5 @@
 // UI imports..
-import React from "react";
+import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import { Box, Button, fabClasses, styled } from "@mui/material";
@@ -91,6 +91,7 @@ function ViewCampaign() {
   const [contributionError, setContributionError] = React.useState("");
   const [abortingError, setAbortingError] = React.useState("");
   const [endAndWithdrawError, setEndAndWithdrawError] = React.useState("");
+  const [msg, setMsg] = useState("");
 
   // for testing purpose..
   const etherScanAddress = "0x4d496ccc28058b1d74b7a19541663e21154f9c84"; // some dummy address.
@@ -184,6 +185,8 @@ function ViewCampaign() {
   };
 
   const handleContributedFunds = async (data) => {
+    console.log(data.contribAmount,campaignData.ethRaised);
+    calculateEquity(data.contribAmount,campaignData.ethRaised);
     console.info("handle contribute funds called");
     console.log(data);
 
@@ -205,11 +208,21 @@ function ViewCampaign() {
       // after successful contribution..
       contributionReset("", { keepValues: false }); // clear the values entered.
       setIsContributionSuccess(true);
+
+      
     } catch (err) {
       console.log(err);
       setContributionError(err);
     }
   };
+
+  function calculateEquity(contribAmount , goal){
+      console.log("Hello Moto", contribAmount,goal);
+      var equity = (contribAmount * 10)/goal;
+      console.log(equity);
+      displayMSG(equity);
+      // setEquity(equity);
+  }
 
   const handleEndAndWithdraw = async (data) => {
     console.log("Withdraw called");
@@ -335,6 +348,11 @@ function ViewCampaign() {
     );
   }
 
+  function displayMSG(equity){
+    setMsg(`You will get ${equity} % of Equity`);
+  }
+
+
   function BecomeBacker() {
     return (
       <Container
@@ -405,6 +423,7 @@ function ViewCampaign() {
                   fullWidth
                   loading={contributionFormState.isSubmitting}
                   sx={{ marginTop: 1 }}
+                  // onClick={displayMSG}
                 >
                   Contribute Funds
                 </LoadingButton>
@@ -427,7 +446,9 @@ function ViewCampaign() {
               )}
             </form>
           )}
-
+          <Typography variant="subtitle2" color="grey">
+            {msg}
+          </Typography>
           <Typography variant="subtitle2" color="grey">
             Scheme - All or Nothing.
           </Typography>
